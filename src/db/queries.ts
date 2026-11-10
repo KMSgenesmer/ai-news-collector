@@ -1,10 +1,12 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { db } from "./index";
 import {
   articleCategories,
   articles,
   categories,
   notionSaves,
+  type NewArticle,
+  type NewArticleCategory,
 } from "./schema";
 
 const ARTICLE_LIMIT = 60;
@@ -71,4 +73,66 @@ export async function getUserCategories(userId: string) {
     .from(categories)
     .where(eq(categories.userId, userId))
     .orderBy(categories.id);
+}
+
+// 분류 힌트(description) 포함 — Claude 분류 프롬프트용
+export async function getUserCategoriesForClassify(userId: string) {
+  return db
+    .select({
+      id: categories.id,
+      name: categories.name,
+      description: categories.description,
+    })
+    .from(categories)
+    .where(eq(categories.userId, userId))
+    .orderBy(categories.id);
+}
+
+export async function findArticlesByUrls(urls: string[]) {
+  if (urls.length === 0) return [];
+  return db
+    .select({
+      id: articles.id,
+      url: articles.url,
+      titleEn: articles.titleEn,
+      titleKo: articles.titleKo,
+      summaryKo: articles.summaryKo,
+    })
+    .from(articles)
+    .where(inArray(articles.url, urls));
+}
+
+export async function insertArticles(rows: NewArticle[]) {
+  if (rows.length === 0) return [];
+  return db
+    .insert(articles)
+    .values(rows)
+    .onConflictDoNothing({ target: articles.url })
+    .returning({ id: articles.id, url: articles.url });
+}
+
+// 주어진 기사 중 현재 사용자의 분류 행이 이미 있는 article id
+export async function getClassifiedArticleIds(userId: string, articleIds: number[]) {
+  if (articleIds.length === 0) return new Set<number>();
+  const rows = await db
+    .select({ articleId: articleCategories.articleId })
+    .from(articleCategories)
+    .where(
+      and(
+        eq(articleCategories.userId, userId),
+        inArray(articleCategories.articleId, articleIds),
+      ),
+    );
+  return new Set(rows.map((r) => r.articleId));
+}
+
+export async function upsertClassifications(rows: NewArticleCategory[]) {
+  if (rows.length === 0) return;
+  await db
+    .insert(articleCategories)
+    .values(rows)
+    .onConflictDoUpdate({
+      target: [articleCategories.userId, articleCategories.articleId],
+      set: { categoryId: sql`excluded.category_id` },
+    });
 }

@@ -1,4 +1,5 @@
 import { UserButton } from "@clerk/nextjs";
+import { FetchNewsButton } from "./fetch-news-button";
 
 export function DashboardHeader() {
   return (
@@ -7,7 +8,10 @@ export function DashboardHeader() {
         <h1 className="text-lg font-bold tracking-tight text-slate-900 dark:text-slate-50">
           AI뉴스 수집기
         </h1>
-        <UserButton />
+        <div className="flex items-center gap-3">
+          <FetchNewsButton />
+          <UserButton />
+        </div>
       </div>
     </header>
   );
