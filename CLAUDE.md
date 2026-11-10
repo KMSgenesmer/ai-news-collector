@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Only the `create-next-app` scaffold exists (`src/app/{layout,page}.tsx`, `globals.css`). `PRD.md` (Korean) is the source of truth for what to build; follow its section 14 implementation order (Clerk → Neon/Drizzle → categories CRUD → RSS + Claude pipeline → card UI → Notion OAuth/MCP → reclassify/polish). Clerk, Drizzle, Neon, and the Anthropic SDK are **not installed yet**.
 
+## UI guide
+
+`ui.md` (Korean) is the UI/style guide: Tailwind CSS, app name "AI뉴스 수집기", dashboard layout (header → category chips ending with an "add category" button → news card grid), card/button/badge class conventions, and empty/loading states. Read it before building or changing any UI and follow its classes and structure.
+
 ## Commands
 
 ```bash
