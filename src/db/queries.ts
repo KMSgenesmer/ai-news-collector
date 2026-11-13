@@ -67,6 +67,50 @@ export async function getDashboardArticles(
   }));
 }
 
+// Notion 저장용: 기사 + 현재 사용자의 카테고리명 + 기존 저장 여부
+export async function getArticleForSave(userId: string, articleId: number) {
+  const [row] = await db
+    .select({
+      id: articles.id,
+      url: articles.url,
+      titleKo: articles.titleKo,
+      summaryKo: articles.summaryKo,
+      publishedAt: articles.publishedAt,
+      categoryName: categories.name,
+      savedArticleId: notionSaves.articleId,
+    })
+    .from(articles)
+    .leftJoin(
+      articleCategories,
+      and(
+        eq(articleCategories.articleId, articles.id),
+        eq(articleCategories.userId, userId),
+      ),
+    )
+    .leftJoin(categories, eq(categories.id, articleCategories.categoryId))
+    .leftJoin(
+      notionSaves,
+      and(
+        eq(notionSaves.articleId, articles.id),
+        eq(notionSaves.userId, userId),
+      ),
+    )
+    .where(eq(articles.id, articleId))
+    .limit(1);
+  return row ?? null;
+}
+
+export async function insertNotionSave(
+  userId: string,
+  articleId: number,
+  notionPageUrl: string,
+) {
+  await db
+    .insert(notionSaves)
+    .values({ userId, articleId, notionPageUrl })
+    .onConflictDoNothing();
+}
+
 export async function getUserCategories(userId: string) {
   return db
     .select({ id: categories.id, name: categories.name })

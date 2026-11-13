@@ -1,5 +1,6 @@
 import type { DashboardArticle } from "@/db/queries";
 import { categoryBadgeClass } from "./category-colors";
+import { SaveNewsButton } from "./save-news-button";
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
   timeZone: "Asia/Seoul",
@@ -24,11 +25,6 @@ export function NewsCard({ article }: { article: DashboardArticle }) {
         >
           {categoryName ?? "미분류"}
         </span>
-        {saved && (
-          <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-            ✓ 저장됨
-          </span>
-        )}
       </div>
 
       <h2 className="mt-3 text-lg font-semibold leading-snug text-slate-900 dark:text-slate-50">
@@ -60,16 +56,7 @@ export function NewsCard({ article }: { article: DashboardArticle }) {
         >
           원문 보기 ↗
         </a>
-        {!saved && (
-          <button
-            type="button"
-            disabled
-            title="Notion 저장은 준비 중입니다"
-            className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-          >
-            Notion 저장
-          </button>
-        )}
+        <SaveNewsButton articleId={article.id} saved={saved} />
       </div>
     </article>
   );
