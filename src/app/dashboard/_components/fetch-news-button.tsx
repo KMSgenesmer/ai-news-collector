@@ -7,6 +7,7 @@ type FetchResponse = {
   fetched: number;
   added: number;
   skipped: number;
+  classified: number;
   errors: { target: string; reason: string }[];
   error?: string;
 };
@@ -47,7 +48,7 @@ export function FetchNewsButton() {
           kind: "ok",
           text:
             data.added > 0
-              ? `새 기사 ${data.added}건을 추가했어요.`
+              ? `새 기사 ${data.added}건을 번역·분류해 추가했어요.`
               : "새로 추가할 기사가 없어요.",
         });
       }

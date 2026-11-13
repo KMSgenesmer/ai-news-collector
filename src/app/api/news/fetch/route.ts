@@ -11,7 +11,7 @@ export async function POST() {
   }
 
   try {
-    const result = await runFetch();
+    const result = await runFetch(userId);
     return Response.json(result);
   } catch (e) {
     return Response.json(
