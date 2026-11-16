@@ -216,3 +216,16 @@ export async function ensureDefaultCategories(userId: string) {
     .values(DEFAULT_CATEGORIES.map((c) => ({ ...c, userId })))
     .onConflictDoNothing();
 }
+
+// 기사 삭제 (article_categories, notion_saves는 FK cascade로 함께 삭제). 삭제됐으면 true.
+export async function deleteArticle(articleId: number) {
+  try {
+    const rows = await db
+      .delete(articles)
+      .where(eq(articles.id, articleId))
+      .returning({ id: articles.id });
+    return rows.length > 0;
+  } catch (e) {
+    throw new Error("기사 삭제 중 DB 오류가 발생했습니다.", { cause: e });
+  }
+}
