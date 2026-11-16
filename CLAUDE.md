@@ -21,6 +21,13 @@ npx tsc --noEmit  # typecheck (no script defined; PRD requires typecheck to pass
 
 No test runner is configured.
 
+## Custom slash commands
+
+Defined in `.claude/commands/`:
+
+- `/new-branch <name>` — switch to main and create a new branch.
+- `/news-workflow <branch-name>` — feature development workflow: check that the current branch is main (warn and ask before moving if not) → create the branch (if no name is given, ask what feature is being built and suggest a lowercase-hyphen name) → announce "이제 개발을 시작하세요!" and recap the stack/conventions from this file → on "완료"/"done", list changed files, suggest a commit message, and after user confirmation commit and merge into main → summarize the work.
+
 ## Next.js version caveat
 
 `next` is 16.4.5 / React 19.3. `AGENTS.md` warns this version has breaking changes versus common training data: read the relevant guide in `node_modules/next/dist/docs/` before writing Next.js code. `next.config.ts` enables `cacheComponents` and `partialPrefetching` and wires Tailwind v4 via a Turbopack `*.css` rule (`@tailwindcss/turbopack`), so caching/rendering semantics differ from older App Router behavior.
