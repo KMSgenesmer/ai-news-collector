@@ -1,5 +1,6 @@
 import type { DashboardArticle } from "@/db/queries";
 import { categoryBadgeClass } from "./category-colors";
+import { DeleteNewsButton } from "./delete-news-button";
 import { SaveNewsButton } from "./save-news-button";
 
 const dateFormatter = new Intl.DateTimeFormat("ko-KR", {
@@ -19,12 +20,13 @@ export function NewsCard({ article }: { article: DashboardArticle }) {
 
   return (
     <article className="flex flex-col rounded-xl border border-slate-200 bg-white p-5 transition hover:border-slate-300 hover:shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700">
-      <div className="flex items-center justify-between">
+      <div className="flex items-start justify-between">
         <span
           className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${categoryBadgeClass(categoryId)}`}
         >
           {categoryName ?? "미분류"}
         </span>
+        <DeleteNewsButton articleId={article.id} />
       </div>
 
       <h2 className="mt-3 text-lg font-semibold leading-snug text-slate-900 dark:text-slate-50">
