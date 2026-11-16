@@ -1,4 +1,4 @@
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, ilike, inArray, or, sql } from "drizzle-orm";
 import { db } from "./index";
 import {
   articleCategories,
@@ -24,9 +24,22 @@ export type DashboardArticle = {
 };
 
 // 최신순(발행일 내림차순, 발행일 없는 기사는 뒤로). 분류/저장 여부는 현재 사용자 기준.
+// keyword가 있으면 한국어 제목·요약, 영문 제목에서 대소문자 무시 부분 일치 검색.
 export async function getDashboardArticles(
   userId: string,
+  keyword?: string,
 ): Promise<DashboardArticle[]> {
+  const term = keyword?.trim();
+  // LIKE 와일드카드(%, _, \)는 리터럴로 취급
+  const pattern = term ? `%${term.replace(/[\\%_]/g, "\\$&")}%` : null;
+  const keywordFilter = pattern
+    ? or(
+        ilike(articles.titleKo, pattern),
+        ilike(articles.summaryKo, pattern),
+        ilike(articles.titleEn, pattern),
+      )
+    : undefined;
+
   const rows = await db
     .select({
       id: articles.id,
@@ -55,6 +68,7 @@ export async function getDashboardArticles(
         eq(notionSaves.userId, userId),
       ),
     )
+    .where(keywordFilter)
     .orderBy(
       sql`${articles.publishedAt} desc nulls last`,
       sql`${articles.id} desc`,
