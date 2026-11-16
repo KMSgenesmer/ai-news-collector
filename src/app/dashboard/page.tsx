@@ -10,13 +10,17 @@ export const metadata: Metadata = {
   title: "대시보드 | AI뉴스 수집기",
 };
 
-export default function DashboardPage() {
+export default function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
   return (
     <div className="min-h-screen flex-1 bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-300">
       <DashboardHeader />
       <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8">
         <Suspense fallback={<DashboardSkeleton />}>
-          <DashboardContent />
+          <DashboardContent searchParams={searchParams} />
         </Suspense>
       </main>
     </div>
